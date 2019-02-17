@@ -2,8 +2,15 @@ import React from "react";
 import { ART } from "react-native";
 const { Surface, Group, Shape } = ART;
 
+export interface Data {
+  Mean: number;
+  Source: string;
+  year: number;
+}
+
 interface MyProps {
   children?: JSX.Element;
+  data?: Data[];
   width: number;
   height: number;
 }
