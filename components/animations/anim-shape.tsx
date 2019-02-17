@@ -2,15 +2,11 @@ import React from "react";
 import { ART, LayoutAnimation } from "react-native";
 const { Shape } = ART;
 import Morph from "art/morph/path";
+import { Graph } from "../line-chart/models/Graph";
 
 // Credit: https://github.com/mdvacca/rn-d3-art-charts/blob/master/js/art/AnimShape.js
 
-interface Graph {
-  path: string;
-}
-
 interface MyProps {
-  duration: number;
   d: () => Graph;
   color: string;
   strokeWidth: number;
@@ -22,7 +18,7 @@ interface MyState {
 const AnimationDurationMs = 250;
 
 export class AnimShape extends React.Component<MyProps, MyState> {
-  animating;
+  animating: any;
   previousGraph: Graph;
   constructor(props: MyProps) {
     super(props);
@@ -34,15 +30,15 @@ export class AnimShape extends React.Component<MyProps, MyState> {
     this.computeNextState(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps: MyProps) {
     this.computeNextState(nextProps);
   }
 
   // Animations based on: https://github.com/hswolff/BetterWeather
-  computeNextState(nextProps) {
-    const { d } = nextProps;
+  computeNextState(nextProps: MyProps) {
+    const { d } = this.props;
 
-    const graph = this.props.d();
+    const graph = d();
 
     this.setState({
       path: graph.path
@@ -95,7 +91,7 @@ export class AnimShape extends React.Component<MyProps, MyState> {
   }
 
   // This is where we animate our graph's path value.
-  animate(start) {
+  animate(start: number) {
     this.animating = requestAnimationFrame(timestamp => {
       if (!start) {
         start = timestamp;

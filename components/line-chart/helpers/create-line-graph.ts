@@ -2,32 +2,32 @@
 import * as scale from "d3-scale";
 import * as shape from "d3-shape";
 import * as d3Array from "d3-array";
-import { Data } from "../components/surface/surface";
 import { createScaleX } from "./create-scales";
+import { Graph } from "../models/Graph";
 
 const d3 = {
   scale,
   shape
 };
-export interface LineType {
-  path: string;
-}
-export function createLineGraph(
+export function createLineGraph<T>(
   // This is the data that we get from the API.
-  data: Data[],
+  data: T[],
   width: number,
-  height: number
-): LineType {
+  height: number,
+  xKey: string,
+  yKey: string
+): Graph {
 
-  // Get last item in the array.
+  // Get last and first item in the array.
   const lastDatum = data[data.length - 1];
+  const firstDatum = data[0];
 
   // Create our x-scale.
-  const scaleX = createScaleX(data[0].Year, lastDatum.Year, width);
+  const scaleX = createScaleX(firstDatum[xKey], lastDatum[xKey], width);
 
   // Collect all y values.
   const allYValues = data.reduce<number[]>((all, datum) => {
-    all.push(datum.Mean);
+    all.push(datum[yKey]);
     return all;
   }, []);
 
@@ -44,15 +44,15 @@ export function createLineGraph(
       .clamp(true);
   }
 
-  let lineShape: shape.Line<Data>;
+  let lineShape: shape.Line<T>;
   // Use the d3-shape line generator to create the `d={}` attribute value.
   lineShape = d3.shape
-    .line<Data>()
+    .line<T>()
     // For every x and y-point in our line shape we are given an item from our
     // array which we pass through our scale function so we map the domain value
     // to the range value.
-    .x(d => scaleX(d.Year))
-    .y(d => scaleY(d.Mean));
+    .x(d => scaleX(d[xKey]))
+    .y(d => scaleY(d[yKey]));
   return {
     // Pass in our array of data to our line generator to produce the `d={}`
     // attribute value that will go into our `<Shape />` component.
