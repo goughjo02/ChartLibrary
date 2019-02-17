@@ -18,7 +18,7 @@ export function createLineGraph(
   width: number,
   height: number
 ): LineType {
-  console.log(data);
+
   // Get last item in the array.
   const lastDatum = data[data.length - 1];
 
