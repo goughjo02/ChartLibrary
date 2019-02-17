@@ -24,6 +24,7 @@ export default class App extends React.Component<MyProps, MyState> {
     fetchData(
       "https://raw.githubusercontent.com/goughjo02/ChartLibrary/master/data.json"
     ).then(e => {
+      e = e.filter(e => e.Source === "GISTEMP");
       this.setState({ data: e });
     });
   }
@@ -31,7 +32,7 @@ export default class App extends React.Component<MyProps, MyState> {
     const { data } = this.state;
     return (
       <View style={styles.container}>
-        <Surface height={500} width={500} data={data} />
+        {data[0] && <Surface height={500} width={500} data={data} />}
         <Text>test</Text>
       </View>
     );
