@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { Surface } from "./components/line-chart/surface/surface";
+import { Chart } from "./components/line-chart/chart/chart";
 
 interface Data {
   Mean: number;
@@ -59,7 +59,7 @@ export default class App extends React.Component<MyProps, MyState> {
             onPress={() => this.switch(Source.GISTEMP)}
           />
         </View>
-        {data[0] && <Surface<Data> height={500} width={500} data={data} />}
+        {data[0] && <Chart<Data> height={300} width={500} data={data} />}
         <Text>test</Text>
       </View>
     );
