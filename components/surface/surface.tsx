@@ -10,13 +10,13 @@ export interface Data {
 
 interface MyProps {
   children?: JSX.Element;
-  data?: Data[];
+  data: Data[];
   width: number;
   height: number;
 }
 
 const MySurface = (props: MyProps) => {
-  const { width, height } = props;
+  const { data, height, width } = props;
   return (
     <Surface width={width} height={height}>
       <Group x={0} y={0}>
