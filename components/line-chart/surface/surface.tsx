@@ -1,7 +1,6 @@
 import React from "react";
 import { ART } from "react-native";
 const { Surface, Group } = ART;
-import { Graph } from "../models/Graph";
 
 interface MyProps {
   children: JSX.Element;
@@ -12,16 +11,11 @@ interface MyProps {
   leftPadding: number;
   rightPadding: number;
 }
-interface MyState {
-  graph: () => Graph;
-}
+interface MyState {}
 
 class MySurface extends React.Component<MyProps, MyState> {
   constructor(props: MyProps) {
     super(props);
-    this.state = {
-      graph: () => ({ path: "" })
-    };
   }
   render() {
     const { children, height, width, topPadding, leftPadding } = this.props;

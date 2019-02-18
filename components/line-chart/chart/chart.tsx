@@ -1,8 +1,10 @@
 import React from "react";
 import { createLineGraph } from "../helpers/create-line-graph";
 import { AnimShape } from "../../animations/anim-shape";
-import { Graph } from "../models/Graph";
 import { MySurface } from "../surface/surface";
+
+import { ART } from "react-native";
+const { Group } = ART;
 
 interface MyProps<T> {
   data: T[];
@@ -15,19 +17,17 @@ interface MyProps<T> {
   strokeWidth?: number;
   color?: string;
 }
-interface MyState {
-  graph: () => Graph;
-}
+interface MyState {}
 
 class Chart<T> extends React.Component<MyProps<T>, MyState> {
   constructor(props: MyProps<T>) {
     super(props);
-    this.state = {
-      graph: () => ({ path: "" })
-    };
   }
   render() {
     const { data, height, width } = this.props;
+    if (!data) {
+      return null;
+    }
     let {
       topPadding,
       bottomPadding,
@@ -42,6 +42,13 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
     rightPadding = rightPadding || 10;
     strokeWidth = strokeWidth || 4;
     color = color || "#00f";
+    const { path, xAxis, yAxis } = createLineGraph<T>(
+      data,
+      width - leftPadding - rightPadding,
+      height - topPadding - bottomPadding,
+      "Year",
+      "Mean"
+    );
     return (
       <MySurface
         width={500}
@@ -51,19 +58,16 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
         leftPadding={leftPadding}
         rightPadding={rightPadding}
       >
-        <AnimShape
-          d={() =>
-            createLineGraph<T>(
-              data,
-              width - leftPadding - rightPadding,
-              height - topPadding - bottomPadding,
-              "Year",
-              "Mean"
-            )
-          }
-          color={color}
-          strokeWidth={strokeWidth}
-        />
+        <React.Fragment>
+          <AnimShape d={() => path} color={color} strokeWidth={strokeWidth} />
+          <Group x={leftPadding} y={height + topPadding}>
+            <AnimShape
+              d={() => xAxis}
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+          </Group>
+        </React.Fragment>
       </MySurface>
     );
   }

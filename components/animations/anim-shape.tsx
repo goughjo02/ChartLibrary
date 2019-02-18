@@ -2,12 +2,11 @@ import React from "react";
 import { ART, LayoutAnimation } from "react-native";
 const { Shape } = ART;
 import Morph from "art/morph/path";
-import { Graph } from "../line-chart/models/Graph";
 
 // Credit: https://github.com/mdvacca/rn-d3-art-charts/blob/master/js/art/AnimShape.js
 
 interface MyProps {
-  d: () => Graph;
+  d: () => string;
   color: string;
   strokeWidth: number;
 }
@@ -19,7 +18,7 @@ const AnimationDurationMs = 250;
 
 export class AnimShape extends React.Component<MyProps, MyState> {
   animating: any;
-  previousGraph: Graph;
+  previousGraph: string;
   constructor(props: MyProps) {
     super(props);
     this.state = {
@@ -41,7 +40,7 @@ export class AnimShape extends React.Component<MyProps, MyState> {
     const graph = d();
 
     this.setState({
-      path: graph.path
+      path: graph
     });
 
     // The first time this function is hit we need to set the initial
@@ -53,8 +52,8 @@ export class AnimShape extends React.Component<MyProps, MyState> {
     // Only animate if our properties change. Typically this is when our
     // yAccessor function changes.
     if (this.props !== nextProps) {
-      const pathFrom = this.previousGraph.path;
-      const pathTo = graph.path;
+      const pathFrom = this.previousGraph;
+      const pathTo = graph;
 
       cancelAnimationFrame(this.animating);
       this.animating = null;
@@ -105,7 +104,7 @@ export class AnimShape extends React.Component<MyProps, MyState> {
         this.animating = null;
         // Just to be safe set our final value to the new graph path.
         this.setState({
-          path: this.previousGraph.path
+          path: this.previousGraph
         });
 
         // Stop our animation loop.
