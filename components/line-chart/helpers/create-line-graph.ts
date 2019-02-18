@@ -3,7 +3,7 @@ import * as scale from "d3-scale";
 import * as shape from "d3-shape";
 import * as d3Array from "d3-array";
 import { createScaleX } from "./create-scales";
-import { getXAxis } from "./create-axes";
+import { getXAxis, getYAxis } from "./create-axes";
 import { Graph } from "../models/Graph";
 
 const d3 = {
@@ -17,7 +17,8 @@ export function createLineGraph<T>(
   height: number,
   xKey: string,
   yKey: string,
-  minColumnWidth: number = 20
+  minColumnWidth: number = 20,
+  minRowHeight: number = 30
 ): Graph {
   let path: string;
   let xAxis: string;
@@ -25,6 +26,7 @@ export function createLineGraph<T>(
   let scaleX: scale.ScaleLinear<number, number>;
   let scaleY: scale.ScaleLinear<number, number>;
   let xPoints: number[];
+  let yPoints: number[];
   // Get last and first item in the array.
   const lastDatum = data[data.length - 1];
   const firstDatum = data[0];
@@ -55,6 +57,12 @@ export function createLineGraph<T>(
       .range([0, height])
       .clamp(true);
   }
+  const yLength = extentY[1] - extentY[0];
+  const numberYLines = yLength * (height / minRowHeight);
+  yPoints = [];
+  for (let i = 1; i < numberYLines; i++) yPoints.push(i * minRowHeight);
+  yAxis = getYAxis({ outerTick: 10, innerTick: 10, yPoints, scaleY, yKey });
+  // console.log(yAxis);
 
   let lineShape: shape.Line<any>;
   // Use the d3-shape line generator to create the `d={}` attribute value.

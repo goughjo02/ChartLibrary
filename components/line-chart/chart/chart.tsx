@@ -60,6 +60,13 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
       >
         <React.Fragment>
           <AnimShape d={() => path} color={color} strokeWidth={strokeWidth} />
+          <Group x={0} y={topPadding}>
+            <AnimShape
+              d={() => yAxis}
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+          </Group>
           <Group x={leftPadding} y={height + topPadding}>
             <AnimShape
               d={() => xAxis}
