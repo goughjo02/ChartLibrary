@@ -1,7 +1,7 @@
 import React from "react";
-import { createLineGraph } from "../helpers/create-line-graph";
-import { AnimShape } from "../../animations/anim-shape";
-import { MySurface } from "../surface/surface";
+import { createLineGraph } from "../functions/line-graph";
+import { AnimShape } from "../animations/anim-shape";
+import { MySurface } from "./surface/surface";
 
 import { ART } from "react-native";
 const { Group } = ART;
@@ -42,7 +42,7 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
     rightPadding = rightPadding || 10;
     strokeWidth = strokeWidth || 4;
     color = color || "#00f";
-    const { path, xAxis, yAxis } = createLineGraph<T>(
+    const { path, xAxis, yAxis } = createLineGraph(
       data,
       width - leftPadding - rightPadding,
       height - topPadding - bottomPadding,

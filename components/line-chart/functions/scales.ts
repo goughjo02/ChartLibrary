@@ -1,5 +1,4 @@
 import * as scale from "d3-scale";
-import { number } from "prop-types";
 
 export function createScaleX(
   start: number,

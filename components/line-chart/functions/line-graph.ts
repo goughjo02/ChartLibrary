@@ -2,15 +2,15 @@
 import * as scale from "d3-scale";
 import * as shape from "d3-shape";
 import * as d3Array from "d3-array";
-import { createScaleX } from "./create-scales";
-import { getXAxis, getYAxis } from "./create-axes";
+import { createScaleX } from "./scales";
+import { axisSequentialScale, axisContinuousScale } from "./axes";
 import { Graph } from "../models/Graph";
 
 const d3 = {
   scale,
   shape
 };
-export function createLineGraph<T>(
+export function createLineGraph(
   // This is the data that we get from the API.
   data: any[],
   width: number,
@@ -26,7 +26,6 @@ export function createLineGraph<T>(
   let scaleX: scale.ScaleLinear<number, number>;
   let scaleY: scale.ScaleLinear<number, number>;
   let xPoints: number[];
-  let yPoints: number[];
   // Get last and first item in the array.
   const lastDatum = data[data.length - 1];
   const firstDatum = data[0];
@@ -40,7 +39,7 @@ export function createLineGraph<T>(
     const rounded = Math.round(dataStep);
     return i % rounded === 0;
   });
-  xAxis = getXAxis({ outerTick: 10, innerTick: 10, xPoints, scaleX, xKey });
+  xAxis = axisSequentialScale({ outerTick: 10, innerTick: 10, xPoints, scaleX, xKey });
   // Collect all y values.
   const allYValues = data.reduce<number[]>((all, datum) => {
     all.push(datum[yKey]);
@@ -49,19 +48,18 @@ export function createLineGraph<T>(
 
   // Get the min and max y value.
   const extentY = d3Array.extent(allYValues);
-  if (extentY[0]) {
-    // Create our y-scale.
-    scaleY = scale
-      .scaleLinear()
-      .domain([extentY[0], extentY[1]])
-      .range([0, height])
-      .clamp(true);
-  }
-  const yLength = extentY[1] - extentY[0];
-  const numberYLines = yLength * (height / minRowHeight);
-  yPoints = [];
-  for (let i = 1; i < numberYLines; i++) yPoints.push(i * minRowHeight);
-  yAxis = getYAxis({ outerTick: 10, innerTick: 10, yPoints, scaleY, yKey });
+  scaleY = scale
+    .scaleLinear()
+    .domain([extentY[0], extentY[1]])
+    .range([0, height])
+    .clamp(true);
+  yAxis = axisContinuousScale(
+    extentY[0],
+    extentY[1],
+    height,
+    minRowHeight,
+    scaleY
+  );
   // console.log(yAxis);
 
   let lineShape: shape.Line<any>;

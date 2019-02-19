@@ -15,7 +15,7 @@ export interface YAxisType {
   yKey: string;
 }
 
-export function getXAxis(props: XAxisType): string {
+export function axisSequentialScale(props: XAxisType): string {
   let { outerTick, innerTick, xPoints, scaleX, xKey } = props;
   let xString: string;
   xString = `M0,${0}`;
@@ -28,12 +28,28 @@ export function getXAxis(props: XAxisType): string {
   }
   return xString;
 }
-export function getYAxis(props: YAxisType): string {
-  let { outerTick, innerTick, yPoints, scaleY, yKey } = props;
+
+export function axisContinuousScale(
+  minValue: number,
+  maxValue: number,
+  totalDist: number,
+  minDist: number,
+  scale: ScaleLinear<number, number>,
+  innerTick = 10,
+  outerTick = 10
+): string {
+  var divider = Math.floor(totalDist / minDist);
+  var noPoints = divider + 1;
+  let newArray: number[] = [];
+  var difference = maxValue - minValue;
+  for (let i = noPoints; i >=  0; i--) {
+    newArray.unshift(minValue + (difference * i) / (noPoints));
+  }
   let yString: string;
   yString = `M0,${0}`;
-  for (var i = 0; i <= yPoints.length - 1; i++) {
-    yString = yString + `V${scaleY(yPoints[i])}`;
+  for (var i = 0; i <= newArray.length - 1; i++) {
+    yString = yString + `V${scale(newArray[i])}`;
+    // yString = yString + `V${scale(newArray[i][yKey] || newArray[i])}`;
     yString = yString + `h${outerTick}`;
     yString = yString + `h-${outerTick}`;
     yString = yString + `h-${innerTick}`;
