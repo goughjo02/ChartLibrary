@@ -80,14 +80,11 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
       topPadding,
       bottomPadding,
       leftPadding,
-      rightPadding,
       strokeWidth,
       surfaceColor,
       color,
       xInner,
-      xOuter,
       yInner,
-      yOuter
     } = this.props;
     if (!data) {
       return null;

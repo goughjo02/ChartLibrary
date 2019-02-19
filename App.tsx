@@ -42,12 +42,13 @@ export default class App extends React.Component<MyProps, MyState> {
       "https://raw.githubusercontent.com/goughjo02/ChartLibrary/master/data.json"
     ).then(e => {
       this.setState(prevState => ({
-        data: e.filter(e => e.Source === prevState.source)
+        data: e
       }));
     });
   }
   render() {
-    let { data } = this.state;
+    let { data, source } = this.state;
+    data = data.filter(e => e.Source === source);
     return (
       <View style={styles.container}>
         {data[0] && (
