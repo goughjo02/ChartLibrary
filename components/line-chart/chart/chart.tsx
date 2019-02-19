@@ -2,80 +2,127 @@ import React from "react";
 import { createLineGraph } from "../functions/line-graph";
 import { AnimShape } from "../animations/anim-shape";
 import { MySurface } from "./surface/surface";
-
-import { ART } from "react-native";
-const { Group } = ART;
+import { Draggable } from "../animations/click-and-drag";
+import { Axis } from "./axis/axis";
+import { Animated } from "react-native";
+const { View } = Animated;
 
 interface MyProps<T> {
+  yKey: string;
+  xKey: string;
   data: T[];
   width: number;
   height: number;
-  topPadding?: number;
-  bottomPadding?: number;
-  leftPadding?: number;
-  rightPadding?: number;
-  strokeWidth?: number;
+  topPadding: number;
+  bottomPadding: number;
+  leftPadding: number;
+  rightPadding: number;
+  strokeWidth: number;
+  xInner: number;
+  xOuter: number;
+  yInner: number;
+  yOuter: number;
   color?: string;
 }
 interface MyState {}
 
 class Chart<T> extends React.Component<MyProps<T>, MyState> {
+  path: string;
+  xAxis: string;
+  yAxis: string;
   constructor(props: MyProps<T>) {
     super(props);
   }
+  setPath(): void {
+    const {
+      data,
+      height,
+      width,
+      topPadding,
+      bottomPadding,
+      leftPadding,
+      rightPadding,
+      xInner,
+      xOuter,
+      yInner,
+      yOuter,
+      xKey,
+      yKey
+    } = this.props;
+    const { path, xAxis, yAxis } = createLineGraph(
+      data,
+      width - leftPadding - rightPadding,
+      height - topPadding - bottomPadding,
+      xKey,
+      yKey,
+      xInner,
+      xOuter,
+      yInner,
+      yOuter
+    );
+    this.path = path;
+    this.xAxis = xAxis;
+    this.yAxis = yAxis;
+  }
+  componentDidMount() {
+    this.setPath();
+  }
+  componentDidUpdate() {
+    this.setPath();
+  }
   render() {
-    const { data, height, width } = this.props;
-    if (!data) {
-      return null;
-    }
-    let {
+    const {
+      data,
+      height,
+      width,
       topPadding,
       bottomPadding,
       leftPadding,
       rightPadding,
       strokeWidth,
-      color
+      color,
+      xInner,
+      xOuter,
+      yInner,
+      yOuter
     } = this.props;
-    topPadding = topPadding || 10;
-    bottomPadding = bottomPadding || 10;
-    leftPadding = leftPadding || 30;
-    rightPadding = rightPadding || 10;
-    strokeWidth = strokeWidth || 4;
-    color = color || "#00f";
-    const { path, xAxis, yAxis } = createLineGraph(
-      data,
-      width - leftPadding - rightPadding,
-      height - topPadding - bottomPadding,
-      "Year",
-      "Mean"
-    );
+    if (!data) {
+      return null;
+    }
     return (
-      <MySurface
-        width={500}
-        height={500}
-        topPadding={topPadding}
-        bottomPadding={bottomPadding}
-        leftPadding={leftPadding}
-        rightPadding={rightPadding}
-      >
-        <React.Fragment>
-          <AnimShape d={() => path} color={color} strokeWidth={strokeWidth} />
-          <Group x={-20} y={topPadding}>
+      <View>
+        <Draggable />
+        <MySurface
+          width={width}
+          height={height}
+          topPadding={topPadding}
+          bottomPadding={bottomPadding}
+          leftPadding={leftPadding}
+          rightPadding={rightPadding}
+        >
+          <React.Fragment>
             <AnimShape
-              d={() => yAxis}
+              d={() => this.path}
               color={color}
               strokeWidth={strokeWidth}
             />
-          </Group>
-          <Group x={leftPadding - 25} y={height + topPadding}>
-            <AnimShape
-              d={() => xAxis}
+            <Axis
+              x={-(yInner + yOuter)}
+              y={topPadding}
+              d={() => this.yAxis}
               color={color}
               strokeWidth={strokeWidth}
             />
-          </Group>
-        </React.Fragment>
-      </MySurface>
+            <Axis
+              x={-(xInner + xOuter)}
+              y={topPadding}
+              d={() => this.xAxis}
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+          </React.Fragment>
+        </MySurface>
+      </View>
     );
   }
 }

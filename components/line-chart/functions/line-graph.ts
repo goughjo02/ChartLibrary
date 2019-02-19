@@ -17,6 +17,10 @@ export function createLineGraph(
   height: number,
   xKey: string,
   yKey: string,
+  xInner,
+  xOuter,
+  yInner,
+  yOuter,
   minColumnWidth: number = 20,
   minRowHeight: number = 30
 ): Graph {
@@ -39,7 +43,13 @@ export function createLineGraph(
     const rounded = Math.round(dataStep);
     return i % rounded === 0;
   });
-  xAxis = axisSequentialScale({ outerTick: 10, innerTick: 10, xPoints, scaleX, xKey });
+  xAxis = axisSequentialScale({
+    outerTick: xOuter,
+    innerTick: xInner,
+    xPoints,
+    scaleX,
+    xKey
+  });
   // Collect all y values.
   const allYValues = data.reduce<number[]>((all, datum) => {
     all.push(datum[yKey]);
@@ -58,7 +68,9 @@ export function createLineGraph(
     extentY[1],
     height,
     minRowHeight,
-    scaleY
+    scaleY,
+    yInner,
+    yOuter
   );
   // console.log(yAxis);
 

@@ -41,14 +41,34 @@ export default class App extends React.Component<MyProps, MyState> {
     fetchData(
       "https://raw.githubusercontent.com/goughjo02/ChartLibrary/master/data.json"
     ).then(e => {
-      this.setState({ data: e });
+      this.setState(prevState => ({
+        data: e.filter(e => e.Source === prevState.source)
+      }));
     });
   }
   render() {
     let { data } = this.state;
-    data = data.filter(e => e.Source === this.state.source);
     return (
       <View style={styles.container}>
+        {data[0] && (
+          <Chart<Data>
+            yKey={"Mean"}
+            xKey={"Year"}
+            color={"#00f"}
+            height={400}
+            width={800}
+            data={data}
+            strokeWidth={1}
+            topPadding={0}
+            bottomPadding={0}
+            leftPadding={0}
+            rightPadding={0}
+            xInner={10}
+            xOuter={10}
+            yInner={10}
+            yOuter={10}
+          />
+        )}
         <View>
           <Button
             title={Source.GCAG}
@@ -59,8 +79,6 @@ export default class App extends React.Component<MyProps, MyState> {
             onPress={() => this.switch(Source.GISTEMP)}
           />
         </View>
-        {data[0] && <Chart<Data> height={300} width={500} data={data} />}
-        <Text>test</Text>
       </View>
     );
   }
