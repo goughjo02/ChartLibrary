@@ -38,7 +38,7 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
     } = this.props;
     topPadding = topPadding || 10;
     bottomPadding = bottomPadding || 10;
-    leftPadding = leftPadding || 10;
+    leftPadding = leftPadding || 30;
     rightPadding = rightPadding || 10;
     strokeWidth = strokeWidth || 4;
     color = color || "#00f";
@@ -60,14 +60,14 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
       >
         <React.Fragment>
           <AnimShape d={() => path} color={color} strokeWidth={strokeWidth} />
-          <Group x={0} y={topPadding}>
+          <Group x={-20} y={topPadding}>
             <AnimShape
               d={() => yAxis}
               color={color}
               strokeWidth={strokeWidth}
             />
           </Group>
-          <Group x={leftPadding} y={height + topPadding}>
+          <Group x={leftPadding - 25} y={height + topPadding}>
             <AnimShape
               d={() => xAxis}
               color={color}
