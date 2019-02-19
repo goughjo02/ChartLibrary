@@ -1,13 +1,18 @@
 import React from "react";
-import { Animated, PanResponder, StyleSheet } from "react-native";
+import { Animated, PanResponder, StyleSheet, View } from "react-native";
+import { ScaleLinear } from "d3-scale";
 
-type MyProps = {};
+type MyProps = {
+  height: number;
+  width: number;
+  scaleX: ScaleLinear<number, number>,
+  scaleY: ScaleLinear<number, number>
+};
 
 type MyState = {
   pan: any;
   cssTransform: any;
 };
-
 
 const CIRCLE_SIZE = 25;
 
@@ -27,6 +32,7 @@ class Draggable extends React.Component<MyProps, MyState> {
   };
 
   _handlePanResponderMove = (event, gestureState) => {
+    const { scaleX, scaleY} = this.props;
     this._circleStyles.style.left = this._previousLeft + gestureState.dx;
     this._circleStyles.style.top = this._previousTop + gestureState.dy;
     this._updateNativeStyles();
@@ -53,8 +59,8 @@ class Draggable extends React.Component<MyProps, MyState> {
   circle: any;
 
   UNSAFE_componentWillMount() {
-    this._previousLeft = 20;
-    this._previousTop = 84;
+    this._previousLeft = 0;
+    this._previousTop = 0;
     this._circleStyles = {
       style: {
         left: this._previousLeft,
@@ -88,22 +94,39 @@ class Draggable extends React.Component<MyProps, MyState> {
       cssTransform: new Animated.Value(0)
     };
   }
-
   render() {
+    const { height, width } = this.props;
+    const viewStyle = StyleSheet.create({
+      view: {
+        height,
+        width
+      }
+    });
     return (
-      <Animated.View
-        hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
-        ref={circle => {
-          this.circle = circle;
-        }}
-        style={styles.circle}
+      <View
+        style={[styles.holder, viewStyle.view]}
         {...this._panResponder.panHandlers}
-      />
+      >
+        <Animated.View
+          hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
+          ref={circle => {
+            this.circle = circle;
+          }}
+          style={styles.circle}
+        />
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  holder: {
+    position: "absolute",
+    backgroundColor: "transparent",
+    zIndex: 99,
+    height: "100%",
+    flex: 1
+  },
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,

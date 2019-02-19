@@ -58,7 +58,7 @@ export default class App extends React.Component<MyProps, MyState> {
             surfaceColor={"#888"}
             color={"#00f"}
             height={400}
-            width={800}
+            width={600}
             data={data}
             strokeWidth={1}
             topPadding={10}

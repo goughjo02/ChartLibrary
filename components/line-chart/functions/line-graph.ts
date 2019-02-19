@@ -89,6 +89,8 @@ export function createLineGraph(
     // attribute value that will go into our `<Shape />` component.
     path,
     xAxis,
-    yAxis
+    yAxis,
+    scaleX,
+    scaleY
   };
 }
