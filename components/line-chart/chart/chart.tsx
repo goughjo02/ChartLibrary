@@ -1,9 +1,9 @@
 import React from "react";
 import { createLineGraph } from "../functions/line-graph";
-import { AnimShape } from "../animations/anim-shape";
 import { MySurface } from "./surface/surface";
 import { Draggable } from "../animations/click-and-drag";
-import { Axis } from "./axis/axis";
+import { AnimatedElement } from "./elements/animated";
+import { StaticElement } from "./elements/static";
 import { Animated } from "react-native";
 const { View } = Animated;
 
@@ -22,6 +22,7 @@ interface MyProps<T> {
   xOuter: number;
   yInner: number;
   yOuter: number;
+  surfaceColor: string;
   color?: string;
 }
 interface MyState {}
@@ -71,6 +72,7 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
     this.setPath();
   }
   render() {
+    this.setPath();
     const {
       data,
       height,
@@ -80,6 +82,7 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
       leftPadding,
       rightPadding,
       strokeWidth,
+      surfaceColor,
       color,
       xInner,
       xOuter,
@@ -92,30 +95,25 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
     return (
       <View>
         <Draggable />
-        <MySurface
-          width={width}
-          height={height}
-          topPadding={topPadding}
-          bottomPadding={bottomPadding}
-          leftPadding={leftPadding}
-          rightPadding={rightPadding}
-        >
+        <MySurface color={surfaceColor} width={width} height={height}>
           <React.Fragment>
-            <AnimShape
+            <AnimatedElement
               d={() => this.path}
+              x={leftPadding}
+              y={topPadding}
               color={color}
               strokeWidth={strokeWidth}
             />
-            <Axis
-              x={-(yInner + yOuter)}
+            <StaticElement
+              x={leftPadding - yInner}
               y={topPadding}
               d={() => this.yAxis}
               color={color}
               strokeWidth={strokeWidth}
             />
-            <Axis
-              x={-(xInner + xOuter)}
-              y={topPadding}
+            <StaticElement
+              x={leftPadding}
+              y={height - bottomPadding + xInner}
               d={() => this.xAxis}
               color={color}
               strokeWidth={strokeWidth}

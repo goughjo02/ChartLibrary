@@ -54,15 +54,16 @@ export default class App extends React.Component<MyProps, MyState> {
           <Chart<Data>
             yKey={"Mean"}
             xKey={"Year"}
+            surfaceColor={"#888"}
             color={"#00f"}
             height={400}
             width={800}
             data={data}
             strokeWidth={1}
-            topPadding={0}
-            bottomPadding={0}
-            leftPadding={0}
-            rightPadding={0}
+            topPadding={10}
+            bottomPadding={40}
+            leftPadding={40}
+            rightPadding={20}
             xInner={10}
             xOuter={10}
             yInner={10}
@@ -87,6 +88,7 @@ export default class App extends React.Component<MyProps, MyState> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center"
