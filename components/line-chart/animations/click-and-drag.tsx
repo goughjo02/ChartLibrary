@@ -66,24 +66,19 @@ class Draggable extends React.Component<MyProps, any> {
         const dy = this.panresponder["y"];
         const event = Animated.event(
           [
-            null, // raw event arg ignored
+            null,
             {
               dx,
               dy
-            } // gestureState arg
+            }
           ],
           {
-            listener: this.listener
+            listener: this.listener,
+            useNativeDriver: true
           }
         );
         event(e, g);
       },
-      // (e, gestureState) => {
-      //   this.state.panresponder.setValue({
-      //     x: gestureState.dx,
-      //     y: gestureState.dy
-      //   })
-      // }
       onPanResponderRelease: () => {
         this.setState({
           backgroundColor: "blue"
