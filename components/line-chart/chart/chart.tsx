@@ -1,9 +1,7 @@
 import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
 import { createLineGraph } from "../functions/line-graph";
 import { MySurface } from "./surface/surface";
-// import { Draggable } from "../animations/click-and-drag";
-var path = require("svg-path-properties");
+import { Draggable } from "../animations/click-and-drag";
 import { AnimatedElement } from "./elements/animated";
 import { StaticElement } from "./elements/static";
 import { Animated } from "react-native";
@@ -28,10 +26,7 @@ interface MyProps<T> {
   surfaceColor: string;
   color?: string;
 }
-interface MyState {
-  // for revolut scroller
-  x: any;
-}
+interface MyState {}
 
 class Chart<T> extends React.Component<MyProps<T>, MyState> {
   path: string;
@@ -39,13 +34,9 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
   yAxis: string;
   scaleX: ScaleLinear<number, number>;
   scaleY: ScaleLinear<number, number>;
-  // for revolut scroller
-  cursor: any;
   constructor(props: MyProps<T>) {
     super(props);
-    this.state = {
-      x: new Animated.Value(0)
-    };
+    this.state = {};
   }
   setPath(): void {
     const {
@@ -82,28 +73,9 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
   }
   componentDidMount() {
     this.setPath();
-    this.state.x.addListener(({ value }) => this.moveCursor(value));
-    this.moveCursor(0);
   }
   componentDidUpdate() {
     this.setPath();
-  }
-  handleScroll = (event: Object) => {
-    const { x } = event.nativeEvent.contentOffset;
-    Animated.event(
-      [
-        {
-          nativeEvent: {
-            contentOffset: { x }
-          }
-        }
-      ],
-      { useNativeDriver: true }
-    );
-  };
-  moveCursor(value): void {
-    const { x, y } = path.svgPathProperties(this.path);
-    this.cursor.current.setNativeProps({ top: y, left: x });
   }
   render() {
     this.setPath();
@@ -123,46 +95,34 @@ class Chart<T> extends React.Component<MyProps<T>, MyState> {
     if (!data) {
       return null;
     }
-    const properties = path.svgPathProperties(this.path);
-    const lineLength = properties.getTotalLength();
     return (
       <View width={width} height={height}>
-        <ScrollView
-          style={StyleSheet.absoluteFill}
-          contentContainerStyle={{ width: lineLength * 2 }}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={16}
-          bounces={false}
-          onScroll={this.handleScroll}
-        >
-          {/* <Draggable height={height} width={width} scaleX={this.scaleX} scaleY={this.scaleY} /> */}
-          <MySurface color={surfaceColor} width={width} height={height}>
-            <React.Fragment>
-              <AnimatedElement
-                d={() => this.path}
-                x={leftPadding}
-                y={topPadding}
-                color={color}
-                strokeWidth={strokeWidth}
-              />
-              <StaticElement
-                x={leftPadding - yInner}
-                y={topPadding}
-                d={() => this.yAxis}
-                color={color}
-                strokeWidth={strokeWidth}
-              />
-              <StaticElement
-                x={leftPadding}
-                y={height - bottomPadding + xInner}
-                d={() => this.xAxis}
-                color={color}
-                strokeWidth={strokeWidth}
-              />
-            </React.Fragment>
-          </MySurface>
-        </ScrollView>
+        <Draggable height={height} width={width} dString={this.path} scaleX={this.scaleX} scaleY={this.scaleY} />
+        <MySurface color={surfaceColor} width={width} height={height}>
+          <React.Fragment>
+            <AnimatedElement
+              d={() => this.path}
+              x={leftPadding}
+              y={topPadding}
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+            <StaticElement
+              x={leftPadding - yInner}
+              y={topPadding}
+              d={() => this.yAxis}
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+            <StaticElement
+              x={leftPadding}
+              y={height - bottomPadding + xInner}
+              d={() => this.xAxis}
+              color={color}
+              strokeWidth={strokeWidth}
+            />
+          </React.Fragment>
+        </MySurface>
       </View>
     );
   }

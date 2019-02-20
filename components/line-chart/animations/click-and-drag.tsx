@@ -1,99 +1,102 @@
 import React from "react";
 import { Animated, PanResponder, StyleSheet, View } from "react-native";
 import { ScaleLinear } from "d3-scale";
+var path = require("svg-path-properties");
 
 type MyProps = {
   height: number;
   width: number;
-  scaleX: ScaleLinear<number, number>,
-  scaleY: ScaleLinear<number, number>
+  scaleX: ScaleLinear<number, number>;
+  scaleY: ScaleLinear<number, number>;
+  dString: string;
 };
 
 type MyState = {
-  pan: any;
-  cssTransform: any;
+  backgroundColor: string;
 };
 
 const CIRCLE_SIZE = 25;
 
-class Draggable extends React.Component<MyProps, MyState> {
-  _handleStartShouldSetPanResponder = (event, gestureState): boolean => {
-    // Should we become active when the user presses down on the circle?
-    return true;
-  };
-
-  _handleMoveShouldSetPanResponder = (event, gestureState): boolean => {
-    // Should we become active when the user moves a touch over the circle?
-    return true;
-  };
-
-  _handlePanResponderGrant = (event, gestureState) => {
-    this._highlight();
-  };
-
-  _handlePanResponderMove = (event, gestureState) => {
-    const { scaleX, scaleY} = this.props;
-    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
-    this._circleStyles.style.top = this._previousTop + gestureState.dy;
-    this._updateNativeStyles();
-  };
-
-  _handlePanResponderEnd = (event, gestureState) => {
-    this._unHighlight();
-    this._previousLeft += gestureState.dx;
-    this._previousTop += gestureState.dy;
-  };
-
-  _panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-    onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-    onPanResponderGrant: this._handlePanResponderGrant,
-    onPanResponderMove: this._handlePanResponderMove,
-    onPanResponderRelease: this._handlePanResponderEnd,
-    onPanResponderTerminate: this._handlePanResponderEnd
-  });
-
-  _previousLeft: number = 0;
-  _previousTop: number = 0;
-  _circleStyles = { style: {} };
-  circle: any;
-
-  UNSAFE_componentWillMount() {
-    this._previousLeft = 0;
-    this._previousTop = 0;
-    this._circleStyles = {
-      style: {
-        left: this._previousLeft,
-        top: this._previousTop,
-        backgroundColor: "green"
-      }
-    };
-  }
-
-  componentDidMount() {
-    this._updateNativeStyles();
-  }
-
-  _highlight() {
-    this._circleStyles.style.backgroundColor = "blue";
-    this._updateNativeStyles();
-  }
-
-  _unHighlight() {
-    this._circleStyles.style.backgroundColor = "green";
-    this._updateNativeStyles();
-  }
-  _updateNativeStyles() {
-    this.circle && this.circle.setNativeProps(this._circleStyles);
-  }
-
+class Draggable extends React.Component<MyProps, any> {
+  _panResponder: any;
+  listener: any;
+  panresponder: any;
   constructor(props) {
     super(props);
-    this.state = {
-      pan: new Animated.Value(0),
-      cssTransform: new Animated.Value(0)
+    (this.panresponder = new Animated.ValueXY({
+      x: new Animated.Value(0),
+      y: new Animated.Value(0)
+    })),
+      (this.state = {
+        backgroundColor: "blue",
+        cssTransform: new Animated.ValueXY({
+          x: new Animated.Value(0),
+          y: new Animated.Value(0)
+        })
+      });
+    this.listener = e => {
+      // const { currentPageX, currentPageY} = e.nativeEvent.touchHistory;
+      const {
+        locationX
+        // locationY,
+        // pageX,
+        // pageY
+      } = e.nativeEvent;
+      const { dString } = this.props;
+      if (dString) {
+        const properties = path.svgPathProperties(dString);
+        const { y } = properties.getPointAtLength(locationX);
+        this.state.cssTransform.setValue({
+          x: locationX,
+          y
+        });
+      }
     };
+    this._panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        // this.panresponder.setOffset;
+        this.setState({
+          backgroundColor: "green"
+        });
+      },
+      onPanResponderMove: (e, g) => {
+        const dx = this.panresponder["x"];
+        const dy = this.panresponder["y"];
+        const event = Animated.event(
+          [
+            null, // raw event arg ignored
+            {
+              dx,
+              dy
+            } // gestureState arg
+          ],
+          {
+            listener: this.listener
+          }
+        );
+        event(e, g);
+      },
+      // (e, gestureState) => {
+      //   this.state.panresponder.setValue({
+      //     x: gestureState.dx,
+      //     y: gestureState.dy
+      //   })
+      // }
+      onPanResponderRelease: () => {
+        this.setState({
+          backgroundColor: "blue"
+        });
+      },
+      onPanResponderTerminate: () => {
+        this.setState({
+          backgroundColor: "blue"
+        });
+      }
+    });
   }
+
   render() {
     const { height, width } = this.props;
     const viewStyle = StyleSheet.create({
@@ -109,10 +112,11 @@ class Draggable extends React.Component<MyProps, MyState> {
       >
         <Animated.View
           hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}
-          ref={circle => {
-            this.circle = circle;
+          style={{
+            backgroundColor: this.state.backgroundColor,
+            transform: this.state.cssTransform.getTranslateTransform(),
+            ...styles.circle
           }}
-          style={styles.circle}
         />
       </View>
     );
